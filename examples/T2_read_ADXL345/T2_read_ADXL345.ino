@@ -15,18 +15,22 @@
 #include <MozziGutsT2.h>
 #include <Oscil.h> // oscillator template
 // #include <tables/whitenoise8192_int8.h>
-// #include <Ead.h> // exponential attack decay
-// #include <EventDelay.h>
+
+#include <Ead.h> // exponential attack decay
+#include <EventDelay.h>
 
 #include <tables/sin2048_int8.h> // sine table for oscillator
 
+// #define CONTROL_RATE 256 // powers of 2 please
+#define CONTROL_RATE 128 // powers of 2 please
+
 // use: Oscil <table_size, update_rate> oscilName (wavetable)
 Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aSin(SIN2048_DATA);
-
+EventDelay kDelay(CONTROL_RATE); // for triggering envelope start
+Ead kEnvelope(CONTROL_RATE); // resolution will be CONTROL_RATE
 
 #include <twi_nonblock.h>
 
-#define CONTROL_RATE 256 // powers of 2 please
 
 // Oscil <WHITENOISE8192_NUM_CELLS, AUDIO_RATE> aNoise(WHITENOISE8192_DATA); // audio noise
 // EventDelay kDelay(CONTROL_RATE); // for triggering envelope start
@@ -79,7 +83,7 @@ void setup_accelero(){
 void initiate_read_accelero(){
   // Reads num bytes starting from address register on device in to _buff array
   // indicate that we are transmitting
-  transmitting = 1;
+//   transmitting = 1;
   // set address of targeted slave
   txAddress = ADXL345_DEVICE;
   // reset tx buffer iterator vars
@@ -101,7 +105,7 @@ void initiate_request_accelero(){
   txBufferIndex = 0;
   txBufferLength = 0;
   // indicate that we are done transmitting
-  transmitting = 0;
+//   transmitting = 0;
 
   uint8_t read = twi_initiateReadFrom(ADXL345_DEVICE, 6);
   acc_status = ACC_READING;
@@ -143,18 +147,47 @@ void setup(){
   // cast to float because the resulting freq will be small
   aSin.setFreq(800u); // set the frequency with an unsigned int or a float
 
+  int attack = 30;
+  int decay = 500;
+  kEnvelope.set(attack,decay);
+//   kDelay.set(attack+decay+500);
+
 //   aNoise.setFreq((float)AUDIO_RATE/WHITENOISE8192_SAMPLERATE);
 
-  Serial.begin( 57600 );
+//  Serial.begin( 57600 );
 }
 
+int accx;
+int accy;
+int accz;
 
-void updateControlT2(){
-  
-    switch( acc_status ){
+int envgain;
+
+void updateControlT2(){  
+//   if(kDelay.ready()){
+//     kEnvelope.start();
+//     kDelay.start();
+//   }
+  envgain = (int) kEnvelope.next();
+
+  if ( envgain < 5 ){
+    if ( accx > 512){
+      aSin.setFreq( 400u );
+      kEnvelope.start();
+    } else if ( accy > 512 ) {
+      aSin.setFreq( 800u );
+      kEnvelope.start();
+    } else if ( accz > 512 ) {
+      aSin.setFreq( 1200u );
+      kEnvelope.start();
+    }
+  }
+
+  switch( acc_status ){
       case ACC_IDLE:
-	gain = (int) accbytedata[1]*256 + accbytedata[0]; // accelerometer x reading
-// 	gain = gain<<4;
+	accx = (int) (accbytedata[1]*256 + accbytedata[0]); // accelerometer x reading
+	accy = (int) (accbytedata[3]*256 + accbytedata[2]); // accelerometer y reading
+	accz = (int) (accbytedata[5]*256 + accbytedata[4]); // accelerometer z reading
 	initiate_read_accelero();
 	break;
       case ACC_WRITING:
@@ -168,7 +201,9 @@ void updateControlT2(){
 	}
 	break;
     }
-  Serial.println(gain);
+//     gain = (accgain>>4) * (envgain>>4);
+  gain = envgain;
+//  Serial.println(gain);
 }
 
 
@@ -181,10 +216,3 @@ int updateAudioT2(){
 void loop(){
   audioHookT2(); // required here
 }
-
-
-
-
-
-
-
