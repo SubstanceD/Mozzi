@@ -340,10 +340,10 @@ void MozziTimer2::stop()
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega48__) || defined (__AVR_ATmega88__) || defined (__AVR_ATmega328P__) || defined (__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
 
 // interrupt service routine that wraps a user defined function supplied by attachInterrupt
-ISR(TIMER2_OVF_vect, ISR_NOBLOCK)
-{
-	  (*MozziTimer2::f_)();
-}
+// ISR(TIMER2_OVF_vect, ISR_NOBLOCK)
+// {
+// 	  (*MozziTimer2::f_)();
+// }
 
 /*
 ISR(TIMER2_COMPA_vect, ISR_NOBLOCK) // ISR_NOBLOCK so it can be interrupted by Timer 1 (audio)
