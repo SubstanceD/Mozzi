@@ -18,12 +18,15 @@
   #endif
 
   #define TWI_READY 0
-  #define TWI_MRX   1
-  #define TWI_MTX   2
-  #define TWI_SRX   3
-  #define TWI_STX   4
+  #define TWI_PRE_MRX   1
+  #define TWI_MRX   2
+  #define TWI_PRE_MTX   3
+  #define TWI_MTX   4
+  #define TWI_SRX   5
+  #define TWI_STX   6
 
 static volatile uint8_t twi_state;
+static volatile uint8_t twi_oldstate;
 // static uint8_t twiint_masrw;
 static uint8_t twi_slarw;
 
@@ -55,9 +58,13 @@ uint8_t twowire_endTransmission(void);
 
 /// non-blocking functions:
 uint8_t twi_initiateReadFrom(uint8_t address, uint8_t length);
+uint8_t twi_continueReadFrom();
+
 uint8_t twi_readMasterBuffer( uint8_t* data, uint8_t length );
 
 uint8_t twi_initiateWriteTo(uint8_t address, uint8_t* data, uint8_t length );
+uint8_t twi_continueWriteTo();
+
 
 void twi_reply(uint8_t ack);
 void twi_stop(void);
@@ -65,7 +72,6 @@ void twi_releaseBus(void);
 
 /// blocking versions:
 uint8_t twi_readFromBlocking(uint8_t address, uint8_t* data, uint8_t length);
-
 uint8_t twi_writeToBlocking(uint8_t address, uint8_t* data, uint8_t length, uint8_t wait);
 
 

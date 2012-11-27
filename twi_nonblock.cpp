@@ -1,5 +1,14 @@
 #include "twi_nonblock.h"
 
+#include <avr/interrupt.h>
+
+uint8_t twi_writeAddress;
+uint8_t * twi_writeData;
+uint8_t twi_writeLength;
+
+uint8_t twi_readAddress;
+// uint8_t * twi_writeData;
+uint8_t twi_readLength;
 
 /* 
  * Function twi_init
@@ -165,19 +174,26 @@ uint8_t twi_initiateReadFrom(uint8_t address, uint8_t length)
   if(TWI_BUFFER_LENGTH < length){
     return 0;
   }
-
-  // wait until twi is ready, become master receiver
-  while(TWI_READY != twi_state){
-    continue;
-  }
   
+  twi_readLength = length;
+  twi_readAddress = address;
+  
+  if ( TWI_READY == twi_state ){
+      twi_continueReadFrom();
+  } else {
+    twi_state = TWI_PRE_MRX;
+  }
+}
+
+uint8_t twi_continueReadFrom(){
+    
   twi_state = TWI_MRX;
   // reset error state (0xFF.. no error occured)
   twi_error = 0xFF;
 
   // initialize buffer iteration vars
   twi_masterBufferIndex = 0;
-  twi_masterBufferLength = length-1;  // This is not intuitive, read on...
+  twi_masterBufferLength = twi_readLength-1;  // This is not intuitive, read on...
   // On receive, the previously configured ACK/NACK setting is transmitted in
   // response to the received byte before the interrupt is signalled. 
   // Therefor we must actually set NACK when the _next_ to last byte is
@@ -186,7 +202,7 @@ uint8_t twi_initiateReadFrom(uint8_t address, uint8_t length)
 
   // build sla+w, slave device address + w bit
   twi_slarw = TW_READ;
-  twi_slarw |= address << 1;
+  twi_slarw |= twi_readAddress << 1;
 
   // send start condition
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTA);
@@ -272,21 +288,30 @@ uint8_t twi_writeToBlocking(uint8_t address, uint8_t* data, uint8_t length, uint
     return 4;	// other twi error
 }
 
-
 /// ----------------- non-blocking ---------
 uint8_t twi_initiateWriteTo(uint8_t address, uint8_t* data, uint8_t length )
 {
-  uint8_t i;
-
   // ensure data will fit into buffer
   if(TWI_BUFFER_LENGTH < length){
     return 1;
   }
+  twi_writeAddress = address;
+  twi_writeData = data;
+  twi_writeLength = length;
 
-  // wait until twi is ready, become master transmitter
-  while(TWI_READY != twi_state){
-    continue;
+  if ( TWI_READY == twi_state ){
+      twi_continueWriteTo();
+  } else {
+    twi_state = TWI_PRE_MTX;
   }
+}
+
+uint8_t twi_continueWriteTo(){
+  uint8_t i;
+  // wait until twi is ready, become master transmitter
+//   while(TWI_READY != twi_state){
+//     continue;
+//   }
 
   twi_state = TWI_MTX;
   // reset error state (0xFF.. no error occured)
@@ -294,16 +319,16 @@ uint8_t twi_initiateWriteTo(uint8_t address, uint8_t* data, uint8_t length )
 
   // initialize buffer iteration vars
   twi_masterBufferIndex = 0;
-  twi_masterBufferLength = length;
+  twi_masterBufferLength = twi_writeLength;
   
   // copy data to twi buffer
-  for(i = 0; i < length; ++i){
-    twi_masterBuffer[i] = data[i];
+  for(i = 0; i < twi_writeLength; ++i){
+    twi_masterBuffer[i] = twi_writeData[i];
   }
   
   // build sla+w, slave device address + w bit
   twi_slarw = TW_WRITE;
-  twi_slarw |= address << 1;
+  twi_slarw |= twi_writeAddress << 1;
   
   // send start condition
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT) | _BV(TWSTA);
@@ -322,7 +347,7 @@ void twi_reply(uint8_t ack)
   if(ack){
     TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT) | _BV(TWEA);
   }else{
-	  TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT);
+    TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWINT);
   }
 }
 
@@ -339,12 +364,18 @@ void twi_stop(void)
 
   // wait for stop condition to be exectued on bus
   // TWINT is not set after a stop condition!
-  while(TWCR & _BV(TWSTO)){
+  while(TWCR & _BV(TWSTO)){ //FIXME: does this cause a delay?
     continue;
   }
 
+  twi_oldstate = twi_state;
   // update twi state
   twi_state = TWI_READY;
+  if ( twi_oldstate == TWI_PRE_MTX ){
+      twi_continueWriteTo();
+  } else if ( twi_oldstate == TWI_PRE_MRX ){
+      twi_continueReadFrom();
+  }
 }
 
 /* 
@@ -358,11 +389,19 @@ void twi_releaseBus(void)
   // release bus
   TWCR = _BV(TWEN) | _BV(TWIE) | _BV(TWEA) | _BV(TWINT);
 
+  twi_oldstate = twi_state;
   // update twi state
   twi_state = TWI_READY;
+  if ( twi_oldstate == TWI_PRE_MTX ){
+      twi_continueWriteTo();
+  } else if ( twi_oldstate == TWI_PRE_MRX ){
+      twi_continueReadFrom();
+  }
 }
 
-SIGNAL(TWI_vect)
+// SIGNAL(TWI_vect)
+// ISR(TWI_vect, ISR_NOBLOCK )
+ISR(TWI_vect)
 {
   switch(TW_STATUS){
     // All Master
