@@ -23,9 +23,9 @@
 #ifndef MOZZIGUTS_H_
 #define MOZZIGUTS_H_
 
-#if F_CPU != 16000000
-#error Mozzi requires a cpu clock speed of 16MHz!
-#endif
+// #if F_CPU != 16000000
+// #error Mozzi requires a cpu clock speed of 16MHz!
+// #endif
 
 #include "Arduino.h"
 #include "TimerOne.h"
