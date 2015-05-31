@@ -8,11 +8,12 @@
 #ifndef TWI_NONBLOCK_H_
 #define TWI_NONBLOCK_H_
 
-// Added by TB2014 for Teensy 3 port
-#if !(defined(__MK20DX128__) || defined(__MK20DX256__)) // hide all code from Teensy 3.1
-
-
 #include "Arduino.h"
+
+// Added by TB2014 for Teensy 3 port
+#if !(defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__AVR_ATtinyX41__)) // hide all code from Teensy 3.1
+
+
 
 #include <compat/twi.h>
 
