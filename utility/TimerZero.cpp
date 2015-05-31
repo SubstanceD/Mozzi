@@ -114,7 +114,8 @@ void TimerZero::stop()
 //------------------------------------------------------------------------------
 // ISR for timer 0 Compare A interrupt
 // TB2012 added ISR_NOBLOCK so it can be interrupted by Timer 1 (audio)
-ISR(TIMER0_COMPA_vect, ISR_NOBLOCK)
+// ISR(TIMER0_COMPA_vect, ISR_NOBLOCK)
+void timer0_isr()
 {
 	// disable timer 0 interrupts
 	TIMSK0 = 0;
