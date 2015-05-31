@@ -172,6 +172,8 @@ HIFI is not available/not required on Teensy 3.1.
 
 #if defined(__MK20DX128__) || defined(__MK20DX256__) // Teensy 3
 #include "AudioConfigTeensy3_12bit.h"
+#elif defined(__AVR_ATtinyX41__)
+#include "AudioConfigATtinyX41_14bit.h"
 #else
 #if (AUDIO_MODE == STANDARD)
 #include "AudioConfigStandard9bitPwm.h"
