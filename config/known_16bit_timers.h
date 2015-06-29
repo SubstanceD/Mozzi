@@ -83,6 +83,12 @@ TB2012 added Leonardo section.
   #define TIMER1_ICP_PIN 14
   #define TIMER1_CLK_PIN 1
 
+// ATtiny841 -- actually this is flexible... just put in some pins here
+#elif defined(__AVR_ATtinyX41__)
+  #define TIMER1_A_PIN 8
+  #define TIMER1_B_PIN 9
+
+  
 #endif
 
 #endif

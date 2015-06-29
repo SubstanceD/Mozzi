@@ -49,7 +49,8 @@ void audioHook() // 2us excluding updateAudio()
 
 uint16_t normalModeMask = 0x3FFF;
 // set pin 10 as the slave select for the DAC:
-const int slaveSelectPin = 10;
+// const int slaveSelectPin = 10;
+const int slaveSelectPin = 3;
 
 static void startAudioSPI()
 {
@@ -64,7 +65,7 @@ static void startAudioSPI()
   // CTC mode, pre-scaler 1:1
   TCCR1A = 0;
   TCCR1B = (1<<WGM12) | (1<<CS10);
-  OCR1A = 500; // top at 1000
+  OCR1A = 750; // top at 1000
   TIMSK1 = ( 1<<OCIE1A );
   sei();
   
