@@ -248,7 +248,7 @@ public:
 		setDecayLevel(decay);
 		setSustainLevel(decay); // stay at decay level
 		setReleaseLevel(1);
-		setIdleLevel(0);	
+		setIdleLevel(0);
 	}
 
 

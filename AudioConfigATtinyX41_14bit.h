@@ -6,6 +6,7 @@
 */
 /* Used internally to put the 0-biased generated audio into the centre of the output range (14 bits on ATTiny841 with SPI) */
 #define AUDIO_BIAS ((uint16_t) 4096)
+// #define AUDIO_BIAS ((uint16_t) 8192)
 
 // #define AUDIO_BIAS ((uint8_t) 244)
 
