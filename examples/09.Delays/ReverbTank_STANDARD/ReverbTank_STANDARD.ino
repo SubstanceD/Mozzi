@@ -19,11 +19,13 @@
     Tim Barrass 2013, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <ReverbTank.h>
 #include <Oscil.h>
-#include <tables/cos8192_int8.h>
+// #include <tables/cos512_int8.h>
+#include <tables/cos512_int8.h>
 #include <tables/envelop2048_uint8.h>
 
 
@@ -32,11 +34,11 @@ ReverbTank reverb;
 #define CONTROL_RATE 512 // quite fast, keeps modulation smooth
 
 // Synth from PhaseMod_Envelope example
-Oscil <COS8192_NUM_CELLS, AUDIO_RATE> aCarrier(COS8192_DATA);
-Oscil <COS8192_NUM_CELLS, AUDIO_RATE> aModulator(COS8192_DATA);
-Oscil <COS8192_NUM_CELLS, AUDIO_RATE> aModWidth(COS8192_DATA);
-Oscil <COS8192_NUM_CELLS, CONTROL_RATE> kModFreq1(COS8192_DATA);
-Oscil <COS8192_NUM_CELLS, CONTROL_RATE> kModFreq2(COS8192_DATA);
+Oscil <COS512_NUM_CELLS, AUDIO_RATE> aCarrier(COS512_DATA);
+Oscil <COS512_NUM_CELLS, AUDIO_RATE> aModulator(COS512_DATA);
+Oscil <COS512_NUM_CELLS, AUDIO_RATE> aModWidth(COS512_DATA);
+Oscil <COS512_NUM_CELLS, CONTROL_RATE> kModFreq1(COS512_DATA);
+Oscil <COS512_NUM_CELLS, CONTROL_RATE> kModFreq2(COS512_DATA);
 Oscil <ENVELOP2048_NUM_CELLS, AUDIO_RATE> aEnvelop(ENVELOP2048_DATA);
 
 
@@ -65,7 +67,8 @@ int updateAudio(){
   // here's the reverb
   int arev = reverb.next(synth);
   // add the dry and wet signals
-  return synth + (arev>>3);
+//   return synth + (arev>>3);
+  return synth + (arev);
 }
 
 

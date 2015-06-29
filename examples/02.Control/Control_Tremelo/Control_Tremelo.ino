@@ -18,11 +18,13 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
+
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h>
 #include <tables/triangle_valve_2048_int8.h>
-#include <tables/sin2048_int8.h>
+#include <tables/sin1024_int8.h>
 #include <Line.h>
 #include <mozzi_midi.h>
 
@@ -31,14 +33,16 @@
 // audio oscillator
 Oscil<TRIANGLE_VALVE_2048_NUM_CELLS, AUDIO_RATE> aSig(TRIANGLE_VALVE_2048_DATA);
 // control oscillator for tremelo
-Oscil<SIN2048_NUM_CELLS, CONTROL_RATE> kTremelo(SIN2048_DATA);
+Oscil<SIN1024_NUM_CELLS, CONTROL_RATE> kTremelo(SIN1024_DATA);
 // a line to interpolate control tremolo at audio rate
 Line <unsigned int> aGain;
 
 
 void setup(){
   aSig.setFreq(mtof(65.f));
-  kTremelo.setFreq(5.5f);
+  aSig.setFreq(mtof(125.f));
+//   kTremelo.setFreq(5.5f);
+  kTremelo.setFreq(2.5f);
   startMozzi(CONTROL_RATE);
 }
 
@@ -54,7 +58,7 @@ int updateAudio(){
   // cast to long before multiply to give room for intermediate result, 
   // and also before shift,
   // to give consistent results for both 8 and 32 bit processors.
-  return (int)((long)((long) aSig.next() * aGain.next()) >> 16); // shifted back to audio range after multiply
+  return (int)((long)((long) aSig.next() * aGain.next()) >> 12); // shifted back to audio range after multiply
 }
 
 

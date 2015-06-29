@@ -17,16 +17,18 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h> // oscillator template
-#include <tables/sin8192_int8.h> // sine table for oscillator
+// #include <tables/sin8192_int8.h> // sine table for oscillator
+#include <tables/sin2048_int8.h> // sine table for oscillator
 #include <EventDelay.h>
 
 #define CONTROL_RATE 64
 
 // use: Oscil <table_size, update_rate> oscilName (wavetable), look in .h file of table #included above
-Oscil <SIN8192_NUM_CELLS, AUDIO_RATE> aSin(SIN8192_DATA);
+Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aSin(SIN2048_DATA);
 
 // for scheduling audio gain changes
 EventDelay kGainChangeDelay;
@@ -49,7 +51,7 @@ void updateControl(){
 
 
 int updateAudio(){
-  return aSin.next()*gain;
+  return aSin.next()*gain << 4;
 }
 
 

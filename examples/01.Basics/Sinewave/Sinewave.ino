@@ -13,6 +13,9 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h> // ATtinyX41, uncomment this line
+#warning "test warning"
+
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h> // oscillator template
@@ -27,7 +30,7 @@ Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aSin(SIN2048_DATA);
 
 void setup(){
   startMozzi(CONTROL_RATE); // set a control rate of 64 (powers of 2 please)
-  aSin.setFreq(440); // set the frequency
+  aSin.setFreq(1600); // set the frequency
 }
 
 
@@ -37,7 +40,7 @@ void updateControl(){
 
 
 int updateAudio(){
-  return aSin.next(); // return an int signal centred around 0
+  return (aSin.next() << 4); // return an int signal centred around 0 // 8bit number
 }
 
 

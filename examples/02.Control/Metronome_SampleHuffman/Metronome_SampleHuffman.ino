@@ -13,6 +13,7 @@
 		Tim Barrass 2013, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Metronome.h>
@@ -26,12 +27,12 @@
 #include <samples/thumbpiano_huffman/thumbpiano4.h>
 
 SampleHuffman thumb0(THUMB0_SOUNDDATA,THUMB0_HUFFMAN,THUMB0_SOUNDDATA_BITS);
-SampleHuffman  thumb1(THUMB1_SOUNDDATA,THUMB1_HUFFMAN,THUMB1_SOUNDDATA_BITS);
-SampleHuffman thumb2(THUMB2_SOUNDDATA,THUMB2_HUFFMAN,THUMB2_SOUNDDATA_BITS);
-SampleHuffman thumb3(THUMB3_SOUNDDATA,THUMB3_HUFFMAN,THUMB3_SOUNDDATA_BITS);
-SampleHuffman thumb4(THUMB4_SOUNDDATA,THUMB4_HUFFMAN,THUMB4_SOUNDDATA_BITS);
+SampleHuffman thumb1(THUMB1_SOUNDDATA,THUMB1_HUFFMAN,THUMB1_SOUNDDATA_BITS);
+// SampleHuffman thumb2(THUMB2_SOUNDDATA,THUMB2_HUFFMAN,THUMB2_SOUNDDATA_BITS);
+// SampleHuffman thumb3(THUMB3_SOUNDDATA,THUMB3_HUFFMAN,THUMB3_SOUNDDATA_BITS);
+// SampleHuffman thumb4(THUMB4_SOUNDDATA,THUMB4_HUFFMAN,THUMB4_SOUNDDATA_BITS);
 
-const char NUM_SAMPLES = 5;
+const char NUM_SAMPLES = 2;
 
 Metronome kMetro(800); // enough delay so samples don't overlap, because the load would be too much
 
@@ -56,17 +57,17 @@ void updateControl(){
       thumb1.start();
       break;
       
-      case 2:
-      thumb2.start();
-      break;
+//       case 2:
+//       thumb2.start();
+//       break;
+//       
+//       case 3:
+//       thumb3.start();
+//       break;
       
-      case 3:
-      thumb3.start();
-      break;
-      
-      case 4:
-      thumb4.start();
-      break;
+//       case 4:
+//       thumb4.start();
+//       break;
     }
   }
 }
@@ -75,11 +76,11 @@ void updateControl(){
 int updateAudio(){ 
   int asig = (int)
   thumb0.next() +
-  thumb1.next() +
-  thumb2.next() +
-  thumb3.next() +
-  thumb4.next();
-  return asig;
+  thumb1.next();
+//   thumb2.next(); // +
+//   thumb3.next() +
+//   thumb4.next();
+  return asig << 4;
 }
 
 

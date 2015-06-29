@@ -19,32 +19,33 @@
   
     Tim Barrass 2012, CC by-nc-sa.
 */
+#include <SPI.h>
 
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h>
-#include <tables/cos8192_int8.h>
+#include <tables/cos2048_int8.h>
 #include <mozzi_rand.h>
 #include <mozzi_midi.h>
 #include <mozzi_fixmath.h> // for Q16n16 fixed-point fractional number type
 
 // harmonics
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos1(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos2(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos3(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos4(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos5(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos6(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos7(COS8192_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos1(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos2(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos3(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos4(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos5(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos6(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos7(COS2048_DATA);
 
 // duplicates but slightly off frequency for adding to originals
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos1b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos2b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos3b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos4b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos5b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos6b(COS8192_DATA);
-Oscil<COS8192_NUM_CELLS, AUDIO_RATE> aCos7b(COS8192_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos1b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos2b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos3b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos4b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos5b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos6b(COS2048_DATA);
+Oscil<COS2048_NUM_CELLS, AUDIO_RATE> aCos7b(COS2048_DATA);
 
 // base pitch frequencies in 24n8 fixed int format (for speed later)
 Q16n16 f1,f2,f3,f4,f5,f6,f7;
@@ -143,5 +144,6 @@ int updateAudio(){
     aCos6.next() + aCos6b.next() +
     aCos7.next() + aCos7b.next();
 
-  return asig >> 3;
+//   return asig >> 3;
+  return asig;
 }

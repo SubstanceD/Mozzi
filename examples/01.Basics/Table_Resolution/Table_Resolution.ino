@@ -14,6 +14,7 @@
 	 Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install
 #include <MozziGuts.h>
 #include <Oscil.h>
@@ -21,8 +22,8 @@
 #include <tables/sin512_int8.h>
 #include <tables/sin1024_int8.h>
 #include <tables/sin2048_int8.h>
-#include <tables/sin4096_int8.h>
-#include <tables/sin8192_int8.h>
+// #include <tables/sin4096_int8.h>
+// #include <tables/sin8192_int8.h>
 #include <EventDelay.h> // for scheduling events
 #include <Line.h>
 
@@ -33,17 +34,17 @@ Oscil <SIN256_NUM_CELLS, AUDIO_RATE> aSin0(SIN256_DATA); // can hear significant
 Oscil <SIN512_NUM_CELLS, AUDIO_RATE> aSin1(SIN512_DATA); // noise still there but less noticeable
 Oscil <SIN1024_NUM_CELLS, AUDIO_RATE> aSin2(SIN1024_DATA); // borderline, hardly there if at all
 Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aSin3(SIN2048_DATA); // no audible improvement from here on
-Oscil <SIN4096_NUM_CELLS, AUDIO_RATE> aSin4(SIN4096_DATA); // for 45 year old loud sound damaged ears
-Oscil <SIN8192_NUM_CELLS, AUDIO_RATE> aSin5(SIN8192_DATA);
+// Oscil <SIN4096_NUM_CELLS, AUDIO_RATE> aSin4(SIN4096_DATA); // for 45 year old loud sound damaged ears
+// Oscil <SIN8192_NUM_CELLS, AUDIO_RATE> aSin5(SIN8192_DATA);
 
 EventDelay kWhoseTurnDelay;
 
-const byte NUM_OSCILS = 6;
+const byte NUM_OSCILS = 4;
 byte whose_turn = 0; // which oscil to listen to
 
 // Line to sweep frequency at control rate
 Line <float> kSweep;
-const unsigned int MILLIS_PER_SWEEP = 2000;
+const unsigned int MILLIS_PER_SWEEP = 10000;
 const unsigned int MILLIS_PER_CONTROL = 1000u / CONTROL_RATE;
 const unsigned long CONTROL_STEPS_PER_SWEEP = (unsigned long) MILLIS_PER_SWEEP / MILLIS_PER_CONTROL;
 
@@ -77,12 +78,12 @@ void updateControl(){
   case 3:
     aSin3.setFreq(f);
     break;
-  case 4:
-    aSin4.setFreq(f);
-    break;
-  case 5:
-    aSin5.setFreq(f);
-    break;
+//   case 4:
+//     aSin4.setFreq(f);
+//     break;
+//   case 5:
+//     aSin5.setFreq(f);
+//     break;
   }
 }
 
@@ -102,12 +103,12 @@ int updateAudio(){
   case 3:
     asig = aSin3.next();
     break;
-  case 4:
-    asig = aSin4.next();
-    break;
-  case 5:
-    asig = aSin5.next();
-    break;
+//   case 4:
+//     asig = aSin4.next();
+//     break;
+//   case 5:
+//     asig = aSin5.next();
+//     break;
   }
   return asig;
 }

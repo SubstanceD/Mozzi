@@ -24,8 +24,9 @@
  */
 
 
+#include <SPI.h>
 
-#include <MIDI.h>
+// #include <MIDI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 
@@ -39,7 +40,7 @@
 
 #include "PDResonant.h"
 // wavetable for oscillator:
-#include <tables/sin2048_int8.h>
+#include <tables/sin1024_int8.h>
 
 // MIDI_CREATE_DEFAULT_INSTANCE(); // if really using midi
 
@@ -60,7 +61,8 @@ EventDelay endNote;
 void setup(){
   randSeed(); // fresh random for fake midi
 
-  pinMode(13, OUTPUT); // for midi feedback
+//   pinMode(13, OUTPUT); // for midi feedback
+  
   // initialize midi channel:
   //MIDI.begin(MIDI_CHANNEL_OMNI);
 
@@ -80,7 +82,7 @@ void HandleNoteOn(byte channel, byte pitch, byte velocity){
     unsigned int attack = kmapX(x_axis);
     unsigned int decay = kmapY(y_axis);
     voice.setPDEnv(attack,decay);
-    digitalWrite(13,HIGH);
+//     digitalWrite(13,HIGH);
   }
   else{
     stopNote(channel,  pitch,  velocity);
@@ -94,7 +96,7 @@ void HandleNoteOff(byte channel, byte pitch, byte velocity){
 
 void stopNote(byte channel, byte pitch, byte velocity){
   voice.noteOff(channel, pitch, velocity);
-  digitalWrite(13,LOW);
+//   digitalWrite(13,LOW);
 }
 
 

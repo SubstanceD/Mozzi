@@ -22,22 +22,23 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Line.h> // for smooth transitions
 #include <Oscil.h> // oscillator template
-#include <tables/triangle_warm8192_int8.h> // triangle table for oscillator
+#include <tables/triangle_valve_2048_int8.h> // triangle table for oscillator
 #include <mozzi_midi.h>
 
 // use: Oscil <table_size, update_rate> oscilName (wavetable), look in .h file of table #included above
-Oscil <TRIANGLE_WARM8192_NUM_CELLS, AUDIO_RATE> aTriangle(TRIANGLE_WARM8192_DATA);
+Oscil <TRIANGLE_VALVE_2048_NUM_CELLS, AUDIO_RATE> aTriangle(TRIANGLE_VALVE_2048_DATA);
 
 // use: Line <type> lineName
 Line <long> aGliss;
 
 #define CONTROL_RATE 64 // powers of 2 please
 
-byte lo_note = 24; // midi note numbers
+byte lo_note = 12; // midi note numbers
 byte hi_note = 36;
 
 long audio_steps_per_gliss = AUDIO_RATE / 4; // ie. 4 glisses per second
@@ -86,5 +87,5 @@ void updateControl(){
 
 int updateAudio(){
   aTriangle.setPhaseInc(aGliss.next());
-  return aTriangle.next();
+  return aTriangle.next() << 4;
 }

@@ -13,12 +13,16 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h> // ATtinyX41, uncomment this line
+
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h>
 #include <tables/cos2048_int8.h> // table for Oscils to play
 #include <mozzi_midi.h> // for mtof
 #include <mozzi_fixmath.h>
+
+#warning "test warning"
 
 #define CONTROL_RATE 64 // powers of 2 please
 
@@ -29,8 +33,8 @@ const byte intensity = 255;
 
 void setup(){
   startMozzi(CONTROL_RATE);
-  aCos.setFreq(mtof(84.f));
-  aVibrato.setFreq(15.f);
+  aCos.setFreq(mtof(44.f));
+  aVibrato.setFreq(5.f);
 }
 
 
@@ -40,7 +44,7 @@ void updateControl(){
 
 int updateAudio(){
     Q15n16 vibrato = (Q15n16) intensity * aVibrato.next();
-    return aCos.phMod(vibrato); // phase modulation to modulate frequency
+    return aCos.phMod(vibrato) << 4; // phase modulation to modulate frequency
 }
 
 void loop(){

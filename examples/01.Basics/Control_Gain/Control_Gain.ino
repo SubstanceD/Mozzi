@@ -14,6 +14,7 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h> // oscillator template
@@ -28,7 +29,8 @@ byte gain = 255;
 
 void setup(){
   startMozzi(); // start with default control rate of 64
-  aSin.setFreq(3320); // set the frequency
+//   aSin.setFreq(3320); // set the frequency
+  aSin.setFreq(2500); // set the frequency
 }
 
 
@@ -39,7 +41,7 @@ void updateControl(){
 
 
 int updateAudio(){
-  return (aSin.next()* gain)>>8; // shift back to STANDARD audio range, like /256 but faster
+  return (aSin.next()* gain); // shift back to STANDARD audio range, like /256 but faster
 }
 
 

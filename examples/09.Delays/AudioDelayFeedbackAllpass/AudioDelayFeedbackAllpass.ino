@@ -15,6 +15,8 @@
     Tim Barrass 2012-13, CC by-nc-sa.
 */
 
+#include <SPI.h>
+
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h>
@@ -22,11 +24,12 @@
 #include <Ead.h> // exponential attack decay
 #include <EventDelay.h>
 #include <mozzi_rand.h>
-#include <tables/whitenoise8192_int8.h>
+// #include <tables/whitenoise8192_int8.h>
+#include <tables/whitenoise1024_int8.h>
 
 #define CONTROL_RATE 128 // powers of 2 please
 
-Oscil <WHITENOISE8192_NUM_CELLS, AUDIO_RATE> aNoise(WHITENOISE8192_DATA); // audio noise
+Oscil <WHITENOISE1024_NUM_CELLS, AUDIO_RATE> aNoise(WHITENOISE1024_DATA); // audio noise
 EventDelay kDelay; // for triggering envelope start
 Ead kEnvelope(CONTROL_RATE); // resolution will be CONTROL_RATE
 
@@ -40,14 +43,14 @@ void setup(){
   startMozzi(CONTROL_RATE); 
   randSeed(); // reseed the random generator for different results each time the sketch runs
   // use float to set freq because it will be small and fractional
-  aNoise.setFreq((float)AUDIO_RATE/WHITENOISE8192_SAMPLERATE);
+  aNoise.setFreq((float)AUDIO_RATE/WHITENOISE1024_SAMPLERATE);
   kDelay.start(1000);
 }
 
 
 void updateControl(){
   // jump around in audio noise table to disrupt obvious looping
-  aNoise.setPhase(rand((unsigned int)WHITENOISE8192_NUM_CELLS));
+  aNoise.setPhase(rand((unsigned int)WHITENOISE1024_NUM_CELLS));
 
   if(kDelay.ready()){
     // set random adsr parameters
@@ -68,7 +71,7 @@ void updateControl(){
 
 
 int updateAudio(){
-  return aDel.next((gain*aNoise.next())>>8);
+  return aDel.next((gain*aNoise.next())>>5);
 }
 
 

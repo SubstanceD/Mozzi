@@ -17,6 +17,7 @@
     Tim Barrass 2012, CC by-nc-sa.
 */
 
+#include <SPI.h>
 //#include <ADC.h>  // Teensy 3.1 uncomment this line and install http://github.com/pedvide/ADC
 #include <MozziGuts.h>
 #include <Oscil.h>
@@ -102,7 +103,8 @@ void updateControl(){
 
 int updateAudio(){
   long mod = (128u+ aModulator.next()) * ((byte)128+ aModDepth.next());
-  int out = (mod * aCarrier.next())>>16;
+//   int out = (mod * aCarrier.next())>>16;
+  int out = (mod * aCarrier.next())>>12;
   return out;
 }
 
