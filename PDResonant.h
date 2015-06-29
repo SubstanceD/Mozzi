@@ -16,7 +16,7 @@
 #include <Oscil.h>
 #include <Phasor.h>
 // wavetable for oscillator:
-#include <tables/sin2048_int8.h>
+#include <tables/sin1024_int8.h>
 
 /**  
 		 PDResonant is a simple midi instrument using Phase distortion used to simulate resonant filter, based on
@@ -38,9 +38,9 @@ public:
 	/** Constructor.
 	*/
 	PDResonant():
-			PDM_SCALE(0.05)
+		PDM_SCALE(0.05)
 	{
-		aOsc.setTable(SIN2048_DATA);
+		aOsc.setTable(SIN1024_DATA);
 		aAmpEnv.setADLevels(255, 255);
 		aAmpEnv.setTimes(50, 300, 60000, 1000);
 		kResonantFreqEnv.setADLevels(255,100);
@@ -117,7 +117,8 @@ public:
 		byte amp_ramp = 255-base_counter;
 
 		// wiki e., with amp envelope added
-		return ((long)aAmpEnv.next() * amp_ramp * aOsc.atIndex(index))>>16;
+// 		return ((long)aAmpEnv.next() * amp_ramp * aOsc.atIndex(index))>>16;
+		return ((long)aAmpEnv.next() * amp_ramp * aOsc.atIndex(index))>>12;
 
 		// return ((index>>3)*amp_ramp)>>8; // this also sounds good - squelchy sawtooth
 	}
@@ -131,7 +132,7 @@ private:
 	Phasor <AUDIO_RATE> aBaseCounter;
 	Phasor <AUDIO_RATE> aResonanceFreqCounter;
 
-	Oscil <SIN2048_NUM_CELLS, AUDIO_RATE> aOsc;
+	Oscil <SIN1024_NUM_CELLS, AUDIO_RATE> aOsc;
 	ADSR <CONTROL_RATE, AUDIO_RATE> aAmpEnv;
 	ADSR <CONTROL_RATE, CONTROL_RATE> kResonantFreqEnv;
 

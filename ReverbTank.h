@@ -44,13 +44,13 @@ public:
 	*/
 	ReverbTank(
 	  int8_t early_reflection1 = 37,
-	  int8_t early_reflection2 = 77,
-	  int8_t early_reflection3 = 127,
+	  int8_t early_reflection2 = 63,
+// 	  int8_t early_reflection3 = 127,
 	  int8_t loop1_delay=117,
 	  uint8_t loop2_delay=255,
 	  int8_t feedback_level = 85):
-			_early_reflection1(early_reflection1),_early_reflection2(early_reflection3),_early_reflection3(early_reflection3),
-			_feedback_level(feedback_level)
+		_early_reflection1(early_reflection1),_early_reflection2(early_reflection2),//_early_reflection3(early_reflection3),
+		_feedback_level(feedback_level)
 	{
 		aLoopDel1.set(loop1_delay);
 		aLoopDel2.set(loop2_delay);
@@ -68,7 +68,7 @@ public:
 		// early reflections
 		int asig = aLoopDel0.next(input, _early_reflection1);
 		asig += aLoopDel0.read(_early_reflection2);
-		asig += aLoopDel0.read(_early_reflection3);
+// 		asig += aLoopDel0.read(_early_reflection3);
 		asig >>= 2;
 
 		// recirculating delays
@@ -88,10 +88,11 @@ public:
 	@param early_reflection2 how long in delay cells till the second early reflection, from early_reflection1 to 127
 	@param early_reflection3 how long in delay cells till the third early reflection, from early_reflection2 to 127
 	*/
-	void setEarlyReflections(int8_t early_reflection1, int8_t early_reflection2, int8_t early_reflection3){
+// 	void setEarlyReflections(int8_t early_reflection1, int8_t early_reflection2, int8_t early_reflection3){
+	void setEarlyReflections(int8_t early_reflection1, int8_t early_reflection2){
 		_early_reflection1=early_reflection1;
 		_early_reflection2=early_reflection2;
-		_early_reflection3=early_reflection3;
+// 		_early_reflection3=early_reflection3;
 	}
 
 
@@ -115,11 +116,11 @@ public:
 private:
 	int8_t _early_reflection1;
 	int8_t _early_reflection2;
-	int8_t _early_reflection3;
+// 	int8_t _early_reflection3;
 
 	int8_t _feedback_level;
 
-	AudioDelay <128> aLoopDel0; // 128/16384 seconds * 340.29 m/s speed of sound = 3.5 metres
+	AudioDelay <64> aLoopDel0; // 128/16384 seconds * 340.29 m/s speed of sound = 3.5 metres
 	AudioDelay <128,int> aLoopDel1;
 	AudioDelay <256,int> aLoopDel2; // 7 metres
 
