@@ -1,5 +1,7 @@
 #Mozzi  
 
+For ATtiny, get the hardware and libraries from: [http://github.com/SpenceKonde/arduino-tiny-841](http://github.com/SpenceKonde/arduino-tiny-841)
+
 ###sound synthesis library for Arduino  
 
 
